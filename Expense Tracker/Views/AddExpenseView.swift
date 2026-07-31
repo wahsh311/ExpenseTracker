@@ -121,7 +121,7 @@ struct AddExpenseView: View {
                 Button(action: {
                     triggerHaptic(style: .heavy)
                     if let amountValue = Double(amount), amountValue > 0 {
-                        // الترتيب الصحيح للمتغيرات حسب الموديل الجديد
+                        
                         let newExpense = Expense(category: selectedCategory, amount: amountValue)
                         context.insert(newExpense)
                         dismiss()

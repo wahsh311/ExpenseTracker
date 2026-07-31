@@ -78,7 +78,6 @@
 			isa = PBXGroup;
 			children = (
 				30C0B93E301BAFE3008C3749 /* ContentView.swift */,
-				30C0B967301BC360008C3749 /* OnboardingView.swift */,
 				30CEA2EE301CED6B00159FAB /* ViewModels */,
 				30CEA2ED301CED6000159FAB /* Components */,
 				30CEA2EC301CED5000159FAB /* Views */,
@@ -111,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				30C0B963301BBEC0008C3749 /* SettingsView.swift */,
+				30C0B967301BC360008C3749 /* OnboardingView.swift */,
 				30C0B94E301BB049008C3749 /* AddExpenseView.swift */,
 				30CEA2E9301CADCD00159FAB /* HistoryView.swift */,
 				30C0B95D301BB392008C3749 /* MainTabView.swift */,

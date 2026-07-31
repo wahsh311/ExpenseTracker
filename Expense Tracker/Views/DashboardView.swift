@@ -17,7 +17,7 @@ struct DashboardView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 30) {
                     
-                    // 1. الترحيب (Header)
+                    //  Header
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Welcome back,")
@@ -36,7 +36,7 @@ struct DashboardView: View {
                     .padding(.horizontal, 25)
                     .padding(.top, 10)
                     
-                    // 2. بطاقة الرصيد
+                    //   Card
                     VStack(alignment: .leading, spacing: 15) {
                         HStack {
                             Text("Total Spent (This Month)")
@@ -61,10 +61,10 @@ struct DashboardView: View {
                         .font(.footnote)
                     }
                     .padding(25)
-                    .glassCard(cornerRadius: 30) // 👈 تطبيق الزجاج بسطر واحد
+                    .glassCard(cornerRadius: 30)
                     .padding(.horizontal, 20)
                     
-                    // 3. الرسم الخطي (Weekly Trend)
+                    //  Weekly Trend
                     VStack(alignment: .leading, spacing: 15) {
                         HStack {
                             Text("Weekly Trend 📈")
@@ -116,7 +116,7 @@ struct DashboardView: View {
                         )
                     }
                     
-                    // 4. الرسم الدائري (Category Breakdown)
+                    // Category Breakdown
                     VStack(alignment: .leading, spacing: 15) {
                         HStack {
                             Text("Category Breakdown 🍩")
@@ -202,7 +202,7 @@ struct DashboardView: View {
                             }
                         }
                         .padding(20)
-                        .glassCard(cornerRadius: 30) // 👈 تطبيق الزجاج بسطر واحد
+                        .glassCard(cornerRadius: 30)
                         .padding(.horizontal, 20)
                         .gesture(
                             DragGesture()
@@ -213,7 +213,6 @@ struct DashboardView: View {
                         )
                     }
                     
-                    // 5. الحركات الأخيرة
                     VStack(alignment: .leading, spacing: 15) {
                         Text("Recent Transactions")
                             .font(.headline)

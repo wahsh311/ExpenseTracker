@@ -11,12 +11,10 @@ class DashboardViewModel: ObservableObject {
     @AppStorage("monthlySalary") var salary: Double = 1000.0
     @AppStorage("fixedExpenses") var fixedExpenses: Double = 0.0
     
-    // متغيرات التنقل والفلاتر صارت هون
     @Published var weekOffset: Int = 0
     @Published var selectedBreakdownRange: BreakdownRange = .month
     @Published var breakdownOffset: Int = 0
 
-    // --- حسابات الرصيد الأساسية ---
     func totalSpentThisMonth(from expenses: [Expense]) -> Double {
         let calendar = Calendar.current
         return expenses.filter { calendar.isDate($0.date, equalTo: Date(), toGranularity: .month) }
@@ -71,7 +69,6 @@ class DashboardViewModel: ObservableObject {
         return data
     }
     
-    // --- 2. منطق الرسم الدائري (Breakdown) ---
     var breakdownLabel: String {
         let calendar = Calendar.current
         let today = Date()
