@@ -1,14 +1,14 @@
 import SwiftUI
 import SwiftData
 
-// 1. هيكل لضمان أمان الملف قبل المشاركة
 struct CSVFile: Identifiable {
     let id = UUID()
     let url: URL
 }
 
-struct UltraPremiumSettingsView: View {
+struct SettingsView: View {
     @AppStorage("monthlySalary") private var salary: Double = 1000.0
+    @AppStorage("fixedExpenses") private var fixedExpenses: Double = 0.0
     @AppStorage("userName") private var userName: String = ""
     @AppStorage("customCategories") private var categories: [String] = []
     
@@ -16,13 +16,13 @@ struct UltraPremiumSettingsView: View {
     @Query(sort: \Expense.date, order: .reverse) private var expenses: [Expense]
     
     @State private var salaryInput: String = ""
+    @State private var fixedExpensesInput: String = ""
     @State private var showDeleteAlert = false
     @FocusState private var isKeyboardFocused: Bool
     
     @State private var showAddCategoryAlert = false
     @State private var newCategoryName = ""
     
-    // 2. المتغير الجديد الآمن للتصدير
     @State private var csvToShare: CSVFile? = nil
 
     var body: some View {
@@ -43,7 +43,6 @@ struct UltraPremiumSettingsView: View {
                     .padding(.horizontal, 25)
                     .padding(.top, 20)
                     
-                    // --- 1. الملف الشخصي ---
                     VStack(spacing: 15) {
                         ZStack {
                             Circle()
@@ -70,47 +69,71 @@ struct UltraPremiumSettingsView: View {
                     }
                     .padding(.bottom, 10)
                     
-                    // --- 2. إعدادات الميزانية ---
                     VStack(alignment: .leading, spacing: 15) {
                         Text("Budget Configuration")
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding(.horizontal, 25)
                         
-                        HStack {
-                            Text("Monthly Salary")
-                                .foregroundColor(.white.opacity(0.8))
-                                .font(.system(size: 16, weight: .medium))
-                            
-                            Spacer()
-                            
-                            HStack(spacing: 4) {
-                                Text("JD").foregroundColor(.gray)
-                                TextField("1000", text: $salaryInput)
-                                    .keyboardType(.decimalPad)
-                                    .focused($isKeyboardFocused)
-                                    .multilineTextAlignment(.trailing)
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 18, weight: .bold, design: .rounded))
-                                    .frame(width: 80)
-                                    .onChange(of: salaryInput) { newValue in
-                                        if let newSalary = Double(newValue) {
-                                            salary = newSalary
+                        VStack(spacing: 0) {
+                            HStack {
+                                Text("Monthly Salary")
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .font(.system(size: 16, weight: .medium))
+                                Spacer()
+                                HStack(spacing: 4) {
+                                    Text("JD").foregroundColor(.gray)
+                                    TextField("1000", text: $salaryInput)
+                                        .keyboardType(.decimalPad)
+                                        .focused($isKeyboardFocused)
+                                        .multilineTextAlignment(.trailing)
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                                        .frame(width: 80)
+                                        .onChange(of: salaryInput) { newValue in
+                                            if let newSalary = Double(newValue) { salary = newSalary }
                                         }
-                                    }
+                                }
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 12)
+                                .background(Color.black.opacity(0.3))
+                                .cornerRadius(10)
                             }
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 12)
-                            .background(Color.black.opacity(0.3))
-                            .cornerRadius(10)
+                            .padding(20)
+                            
+                            Divider()
+                                .background(Color.white.opacity(0.1))
+                                .padding(.horizontal, 20)
+                            
+                            HStack {
+                                Text("Fixed Bills")
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .font(.system(size: 16, weight: .medium))
+                                Spacer()
+                                HStack(spacing: 4) {
+                                    Text("JD").foregroundColor(.gray)
+                                    TextField("0", text: $fixedExpensesInput)
+                                        .keyboardType(.decimalPad)
+                                        .focused($isKeyboardFocused)
+                                        .multilineTextAlignment(.trailing)
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                                        .frame(width: 80)
+                                        .onChange(of: fixedExpensesInput) { newValue in
+                                            if let newFixed = Double(newValue) { fixedExpenses = newFixed }
+                                        }
+                                }
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 12)
+                                .background(Color.black.opacity(0.3))
+                                .cornerRadius(10)
+                            }
+                            .padding(20)
                         }
-                        .padding(20)
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.white.opacity(0.05)))
-                        .overlay(RoundedRectangle(cornerRadius: 25).stroke(Color.white.opacity(0.1), lineWidth: 1))
+                        .glassCard(cornerRadius: 25)
                         .padding(.horizontal, 20)
                     }
                     
-                    // --- 3. إدارة التصنيفات ---
                     VStack(alignment: .leading, spacing: 15) {
                         HStack {
                             Text("Manage Categories")
@@ -157,12 +180,10 @@ struct UltraPremiumSettingsView: View {
                                 }
                             }
                         }
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.white.opacity(0.05)))
-                        .overlay(RoundedRectangle(cornerRadius: 25).stroke(Color.white.opacity(0.1), lineWidth: 1))
+                        .glassCard(cornerRadius: 25)
                         .padding(.horizontal, 20)
                     }
                     
-                    // --- 4. التصدير وإدارة البيانات ---
                     VStack(alignment: .leading, spacing: 15) {
                         Text("Data Management")
                             .font(.headline)
@@ -170,10 +191,7 @@ struct UltraPremiumSettingsView: View {
                             .padding(.horizontal, 25)
                         
                         VStack(spacing: 0) {
-                            // زر التصدير
-                            Button(action: {
-                                exportToCSV()
-                            }) {
+                            Button(action: { exportToCSV() }) {
                                 HStack {
                                     ZStack {
                                         Circle().fill(Color.green.opacity(0.2)).frame(width: 40, height: 40)
@@ -197,7 +215,6 @@ struct UltraPremiumSettingsView: View {
                                 .background(Color.white.opacity(0.1))
                                 .padding(.horizontal, 20)
                             
-                            // زر مسح البيانات
                             Button(action: {
                                 triggerHaptic(style: .medium)
                                 showDeleteAlert = true
@@ -221,8 +238,7 @@ struct UltraPremiumSettingsView: View {
                                 .padding(20)
                             }
                         }
-                        .background(RoundedRectangle(cornerRadius: 25).fill(Color.white.opacity(0.05)))
-                        .overlay(RoundedRectangle(cornerRadius: 25).stroke(Color.white.opacity(0.1), lineWidth: 1))
+                        .glassCard(cornerRadius: 25)
                         .padding(.horizontal, 20)
                     }
                     
@@ -232,6 +248,7 @@ struct UltraPremiumSettingsView: View {
         }
         .onAppear {
             salaryInput = String(format: "%.0f", salary)
+            fixedExpensesInput = String(format: "%.0f", fixedExpenses)
         }
         .alert(isPresented: $showDeleteAlert) {
             Alert(
@@ -252,16 +269,11 @@ struct UltraPremiumSettingsView: View {
                 }
                 newCategoryName = ""
             }
-        } message: {
-            Text("Add an emoji for a better look!")
         }
-        // 3. الطريقة الآمنة لفتح نافذة المشاركة (مستحيل تفتح والملف مش جاهز)
         .sheet(item: $csvToShare) { csv in
             ShareSheet(activityItems: [csv.url])
         }
     }
-    
-    // --- دوال العمليات ---
     
     private func exportToCSV() {
         triggerHaptic(style: .medium)
@@ -278,13 +290,11 @@ struct UltraPremiumSettingsView: View {
             csvText.append("\(dateString),\(safeCategory),\(amountString)\n")
         }
         
-        // تجهيز الملف بالذاكرة
         let fileName = "MyExpenses.csv"
         let path = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
         
         do {
             try csvText.write(to: path, atomically: true, encoding: .utf8)
-            // إعطاء الملف للمتغير الآمن، واللي بدوره رح يفتح شاشة المشاركة فوراً
             csvToShare = CSVFile(url: path)
         } catch {
             print("Failed to create CSV file: \(error.localizedDescription)")

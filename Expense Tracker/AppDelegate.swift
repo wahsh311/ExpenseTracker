@@ -20,10 +20,10 @@ struct Expense_TrackerApp: App {
       NavigationView {
           if isFirstLaunch {
                           // إذا أول مرة، بتطلع شاشة التهيئة
-                        UltraPremiumOnboardingView()
+                        OnboardingView()
                       } else {
                           // إذا مش أول مرة، بيروح عالـ TabBar أو الشاشة الرئيسية
-                          MainPremiumView()
+                          MainView()
                       }
       }
     }

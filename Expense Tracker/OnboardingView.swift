@@ -1,17 +1,16 @@
-
 import SwiftUI
 
-struct UltraPremiumOnboardingView: View {
-    // المتغيرات اللي رح تنحفظ في ذاكرة الجهاز
+struct OnboardingView: View {
     @AppStorage("isFirstLaunch") private var isFirstLaunch: Bool = true
     @AppStorage("userName") private var userName: String = ""
     @AppStorage("monthlySalary") private var salary: Double = 1000.0
+    @AppStorage("fixedExpenses") private var fixedExpenses: Double = 0.0
     @AppStorage("customCategories") private var selectedCategories: [String] = ["Food 🍔", "Transport 🚕", "Coffee ☕️", "Bills 💡"]
     
     @State private var currentStep = 0
     @State private var newCategory: String = ""
+    @FocusState private var isKeyboardFocused: Bool
     
-    // قائمة بكل التصنيفات المقترحة اللي بتخطر عالبال
     @State private var availableCategories: [String] = [
         "Food 🍔", "Coffee ☕️", "Transport 🚕", "Bills 💡",
         "Groceries 🛒", "Shopping 🛍️", "Health 💊", "Gym 💪",
@@ -20,7 +19,6 @@ struct UltraPremiumOnboardingView: View {
         "Car 🚗", "Dining Out 🍽️", "Savings 💰", "Snooker 🎱"
     ]
     
-    // ترتيب الأزرار كشبكة من عمودين
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
@@ -32,7 +30,6 @@ struct UltraPremiumOnboardingView: View {
             
             TabView(selection: $currentStep) {
                 
-                // --- الصفحة الأولى: الاسم والراتب ---
                 VStack(spacing: 30) {
                     Spacer()
                     
@@ -42,7 +39,6 @@ struct UltraPremiumOnboardingView: View {
                         .multilineTextAlignment(.center)
                     
                     VStack(alignment: .leading, spacing: 20) {
-                        // حقل الاسم
                         VStack(alignment: .leading, spacing: 8) {
                             Text("What's your name?").foregroundColor(.gray)
                             TextField("e.g. Abdelqader", text: $userName)
@@ -52,9 +48,9 @@ struct UltraPremiumOnboardingView: View {
                                 .background(Color.white.opacity(0.05))
                                 .cornerRadius(15)
                                 .overlay(RoundedRectangle(cornerRadius: 15).stroke(Color.white.opacity(0.1), lineWidth: 1))
+                                .focused($isKeyboardFocused)
                         }
                         
-                        // حقل الراتب
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Monthly Salary (JD)").foregroundColor(.gray)
                             TextField("1000", value: $salary, format: .number)
@@ -65,6 +61,20 @@ struct UltraPremiumOnboardingView: View {
                                 .background(Color.white.opacity(0.05))
                                 .cornerRadius(15)
                                 .overlay(RoundedRectangle(cornerRadius: 15).stroke(Color.white.opacity(0.1), lineWidth: 1))
+                                .focused($isKeyboardFocused)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Fixed Bills (Rent, Subs, etc.) - JD").foregroundColor(.gray)
+                            TextField("0", value: $fixedExpenses, format: .number)
+                                .keyboardType(.decimalPad)
+                                .font(.title3.bold())
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color.white.opacity(0.05))
+                                .cornerRadius(15)
+                                .overlay(RoundedRectangle(cornerRadius: 15).stroke(Color.white.opacity(0.1), lineWidth: 1))
+                                .focused($isKeyboardFocused)
                         }
                     }
                     .padding(.horizontal, 30)
@@ -73,7 +83,7 @@ struct UltraPremiumOnboardingView: View {
                     
                     Button(action: {
                         withAnimation { currentStep = 1 }
-                        hideKeyboard()
+                        isKeyboardFocused = false
                     }) {
                         Text("Continue")
                             .font(.headline)
@@ -89,7 +99,6 @@ struct UltraPremiumOnboardingView: View {
                 }
                 .tag(0)
                 
-                // --- الصفحة الثانية: التصنيفات المتطورة ---
                 VStack(spacing: 20) {
                     Text("Select Categories")
                         .font(.system(size: 28, weight: .bold, design: .rounded))
@@ -99,17 +108,16 @@ struct UltraPremiumOnboardingView: View {
                     Text("Tap to select what you usually spend on")
                         .foregroundColor(.gray)
                     
-                    // إضافة تصنيف مخصص
                     HStack {
                         TextField("Missing something? (e.g. Trix 🃏)", text: $newCategory)
                             .foregroundColor(.white)
                             .padding()
                             .background(Color.white.opacity(0.05))
                             .cornerRadius(10)
+                            .focused($isKeyboardFocused)
                         
                         Button(action: {
                             if !newCategory.isEmpty && !availableCategories.contains(newCategory) {
-                                // إضافة التصنيف الجديد للقائمة واختياره فوراً
                                 availableCategories.insert(newCategory, at: 0)
                                 selectedCategories.append(newCategory)
                                 newCategory = ""
@@ -125,7 +133,6 @@ struct UltraPremiumOnboardingView: View {
                     }
                     .padding(.horizontal, 20)
                     
-                    // شبكة التصنيفات (Grid)
                     ScrollView(showsIndicators: false) {
                         LazyVGrid(columns: columns, spacing: 15) {
                             ForEach(availableCategories, id: \.self) { category in
@@ -145,9 +152,7 @@ struct UltraPremiumOnboardingView: View {
                                         .font(.system(size: 15, weight: .semibold))
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, 15)
-                                        .background(
-                                            isSelected ? Color.blue : Color.white.opacity(0.05)
-                                        )
+                                        .background(isSelected ? Color.blue : Color.white.opacity(0.05))
                                         .foregroundColor(isSelected ? .white : .white.opacity(0.7))
                                         .cornerRadius(12)
                                         .overlay(
@@ -157,12 +162,11 @@ struct UltraPremiumOnboardingView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 20)
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 20)
                     
                     Button(action: {
-                        // إغلاق شاشة الدخول للأبد والانتقال للـ Dashboard
                         withAnimation { isFirstLaunch = false }
                     }) {
                         Text("Start Tracking")
@@ -183,7 +187,7 @@ struct UltraPremiumOnboardingView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
         }
         .onTapGesture {
-            hideKeyboard()
+            isKeyboardFocused = false
         }
     }
     
@@ -191,13 +195,8 @@ struct UltraPremiumOnboardingView: View {
         let generator = UIImpactFeedbackGenerator(style: .light)
         generator.impactOccurred()
     }
-    
-    private func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
 }
 
-// هذا الكود بيسمح لـ AppStorage بحفظ مصفوفة النصوص (التصنيفات) في ذاكرة الجهاز
 extension Array: RawRepresentable where Element: Codable {
     public init?(rawValue: String) {
         guard let data = rawValue.data(using: .utf8),
@@ -212,4 +211,3 @@ extension Array: RawRepresentable where Element: Codable {
         return result
     }
 }
-

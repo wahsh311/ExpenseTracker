@@ -1,14 +1,13 @@
 import SwiftUI
 import SwiftData
 
-struct UltraPremiumHistoryView: View {
+struct HistoryView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \Expense.date, order: .reverse) private var expenses: [Expense]
     
-    // 1. متغير نص البحث
     @State private var searchText: String = ""
+    @FocusState private var isSearchFocused: Bool
     
-    // 2. تصفية المصاريف بناءً على البحث (بالاسم أو المبلغ)
     var filteredExpenses: [Expense] {
         if searchText.isEmpty {
             return expenses
@@ -20,10 +19,9 @@ struct UltraPremiumHistoryView: View {
         }
     }
     
-    // 3. تجميع المصاريف "المفلترة" حسب الشهر والسنة
     var groupedExpenses: [(month: String, expenses: [Expense])] {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy" // مثلاً: July 2026
+        formatter.dateFormat = "MMMM yyyy"
         
         let grouped = Dictionary(grouping: filteredExpenses) { formatter.string(from: $0.date) }
         
@@ -31,7 +29,7 @@ struct UltraPremiumHistoryView: View {
             .sorted { (group1, group2) in
                 let date1 = group1.expenses.first?.date ?? Date.distantPast
                 let date2 = group2.expenses.first?.date ?? Date.distantPast
-                return date1 > date2 // ترتيب من الأحدث للأقدم
+                return date1 > date2
             }
     }
     
@@ -39,6 +37,7 @@ struct UltraPremiumHistoryView: View {
         ZStack {
             Color(red: 0.05, green: 0.05, blue: 0.08)
                 .edgesIgnoringSafeArea(.all)
+                .onTapGesture { isSearchFocused = false }
             
             VStack(alignment: .leading, spacing: 10) {
                 
@@ -48,7 +47,6 @@ struct UltraPremiumHistoryView: View {
                     .padding(.horizontal, 25)
                     .padding(.top, 20)
                 
-                // --- 4. شريط البحث الفخم ---
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
@@ -56,11 +54,13 @@ struct UltraPremiumHistoryView: View {
                     TextField("Search category or amount...", text: $searchText)
                         .foregroundColor(.white)
                         .disableAutocorrection(true)
+                        .focused($isSearchFocused)
                     
                     if !searchText.isEmpty {
                         Button(action: {
                             withAnimation {
                                 searchText = ""
+                                isSearchFocused = true
                             }
                         }) {
                             Image(systemName: "xmark.circle.fill")
@@ -77,7 +77,6 @@ struct UltraPremiumHistoryView: View {
                 )
                 .padding(.horizontal, 25)
                 .padding(.bottom, 10)
-                // ----------------------------
                 
                 if filteredExpenses.isEmpty {
                     Spacer()
@@ -97,8 +96,7 @@ struct UltraPremiumHistoryView: View {
                             Section {
                                 ForEach(group.expenses) { expense in
                                     ExpenseRowItem(expense: expense)
-                                        .listRowBackground(Color.white.opacity(0.05)) // لون فخم لخلفية كل سطر
-                                        // ميزة السحب للحذف
+                                        .listRowBackground(Color.white.opacity(0.05))
                                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                             Button(role: .destructive) {
                                                 deleteExpense(expense)
@@ -114,14 +112,13 @@ struct UltraPremiumHistoryView: View {
                                     .foregroundColor(.blue)
                                     .padding(.vertical, 5)
                             }
-                            .listRowSeparator(.hidden) // إخفاء الخطوط المزعجة
+                            .listRowSeparator(.hidden)
                         }
                     }
                     .scrollContentBackground(.hidden)
                     .listStyle(PlainListStyle())
-                    // خدعة برمجية لإخفاء الكيبورد فوراً عند تمرير القائمة
                     .simultaneousGesture(DragGesture().onChanged { _ in
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        isSearchFocused = false
                     })
                 }
             }
@@ -139,7 +136,6 @@ struct UltraPremiumHistoryView: View {
     }
 }
 
-// تصميم كل سطر جوا القائمة
 struct ExpenseRowItem: View {
     let expense: Expense
     

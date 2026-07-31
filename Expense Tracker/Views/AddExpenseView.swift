@@ -1,20 +1,16 @@
 import SwiftUI
 import SwiftData
 
-struct UltraPremiumAddExpenseView: View {
+struct AddExpenseView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     
-    // قراءة التصنيفات اللي تم اختيارها
     @AppStorage("customCategories") private var categories: [String] = []
-    
-    
     
     @State private var amount: String = "0"
     @State private var selectedCategory: String = ""
     @State private var amountScale: CGFloat = 1.0
     
-    // 1. متغيرات إضافة تصنيف جديد
     @State private var showAddCategoryAlert = false
     @State private var newCategoryName = ""
     
@@ -32,7 +28,6 @@ struct UltraPremiumAddExpenseView: View {
             
             VStack(spacing: 0) {
                 
-                // قسم عرض المبلغ
                 Spacer()
                 VStack(spacing: 8) {
                     Text("How much?")
@@ -55,11 +50,9 @@ struct UltraPremiumAddExpenseView: View {
                 }
                 Spacer()
                 
-                // قسم التصنيفات (مع زر الإضافة الجديد)
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         
-                        // 2. زر إضافة تصنيف جديد
                         Button(action: {
                             triggerHaptic()
                             showAddCategoryAlert = true
@@ -77,7 +70,6 @@ struct UltraPremiumAddExpenseView: View {
                             .overlay(Capsule().stroke(Color.blue.opacity(0.5), lineWidth: 1))
                         }
                         
-                        // التصنيفات الحالية
                         ForEach(categories, id: \.self) { category in
                             Button(action: {
                                 triggerHaptic()
@@ -106,7 +98,6 @@ struct UltraPremiumAddExpenseView: View {
                 }
                 .padding(.bottom, 30)
                 
-                // لوحة الأرقام
                 VStack(spacing: 15) {
                     ForEach(keypadButtons, id: \.self) { row in
                         HStack(spacing: 15) {
@@ -127,10 +118,10 @@ struct UltraPremiumAddExpenseView: View {
                 }
                 .padding(.bottom, 30)
                 
-                // زر الحفظ
                 Button(action: {
                     triggerHaptic(style: .heavy)
                     if let amountValue = Double(amount), amountValue > 0 {
+                        // الترتيب الصحيح للمتغيرات حسب الموديل الجديد
                         let newExpense = Expense(category: selectedCategory, amount: amountValue)
                         context.insert(newExpense)
                         dismiss()
@@ -155,7 +146,6 @@ struct UltraPremiumAddExpenseView: View {
                 selectedCategory = categories.first ?? "Other 🛒"
             }
         }
-        // 3. النافذة المنبثقة لإضافة تصنيف
         .alert("New Category", isPresented: $showAddCategoryAlert) {
             TextField("e.g. Trix 🃏", text: $newCategoryName)
             
@@ -165,7 +155,6 @@ struct UltraPremiumAddExpenseView: View {
             
             Button("Add") {
                 if !newCategoryName.isEmpty && !categories.contains(newCategoryName) {
-                    // إضافته في بداية القائمة واختياره فوراً
                     categories.insert(newCategoryName, at: 0)
                     selectedCategory = newCategoryName
                 }
