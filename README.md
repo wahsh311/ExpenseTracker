@@ -34,7 +34,7 @@ A premium, sleek, and highly interactive personal finance management application
 ### 📊 Dashboard & Analytics
 | Main Dashboard | Financial Charts |
 | :---: | :---: |
-| <img src="https://github.com/user-attachments/assets/2e56fe5a-af0f-4c13-9f89-b09c677aa359" width="280"/> | <img src="[URL_HERE](https://github.com/user-attachments/assets/546f3e82-c5d6-482e-8902-1c670f6885eb)" width="280"/> |
+| <img src="https://github.com/user-attachments/assets/2e56fe5a-af0f-4c13-9f89-b09c677aa359" width="280"/> | <img src="https://github.com/user-attachments/assets/546f3e82-c5d6-482e-8902-1c670f6885eb" width="280"/> |
 
 ### 💸 Add Expense
 | Custom Keypad & Categories |
